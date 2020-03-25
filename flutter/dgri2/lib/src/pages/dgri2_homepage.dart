@@ -30,6 +30,12 @@ class _DGRI2HomePageState extends State<DGRI2HomePage> {
       //),
       body: Stack(
         children: <Widget>[
+          /*Container(
+            decoration: BoxDecoration(image: DecorationImage(
+              image: AssetImage('images/birds.jpb'),
+              fit: BoxFit.contain,
+            )),
+          ),*/
           _buildIamge(),
           _tarjetaBienvenida(),
           Divider(),
@@ -38,6 +44,7 @@ class _DGRI2HomePageState extends State<DGRI2HomePage> {
           _boton(320.0,opt[1],iconos[1]),
           _boton(440.0,opt[2],iconos[2]),
           _boton(560.0,opt[3],iconos[3]),
+          //Estaría bien montar un background image
 
           //_listaOpciones(),
         ],),
@@ -90,7 +97,7 @@ class _DGRI2HomePageState extends State<DGRI2HomePage> {
 
   Widget _tarjetaBienvenida2() {
     return Container(
-      height: 700.0,
+      height: 640.0,
       //color: Colors.redAccent,
       padding: EdgeInsets.only(top: 350.0, left: 110.0),
       child: Card(
@@ -101,8 +108,8 @@ class _DGRI2HomePageState extends State<DGRI2HomePage> {
         child: Column(
           children: <Widget>[
             ListTile(
-              leading:Icon(Icons.question_answer, color: Colors.blue),
-              title: Text('Nuestro Objetivo'),
+              leading:Icon(Icons.explore, color: Colors.blue),
+              title: Text('SRI:'),
               subtitle: Text('El Sistema Riojano de Innovación se define en la Ley 3/2009 de Ciencia, Tecnología e Innovación de La Rioja, como TODOS los agentes, estructuras e instrumentos públicos y privados, que participan activamente en el desarrollo de la capacidad de innovación de la región, estableciendo entre si a lo largo del proceso de innovación múltiples interconexiones.') 
               ,
 
@@ -189,6 +196,7 @@ class _DGRI2HomePageState extends State<DGRI2HomePage> {
           fit: BoxFit.cover,
           height: _imageHeight,
           colorBlendMode: BlendMode.srcOver,
+          filterQuality: FilterQuality.low,
           color: new Color.fromARGB(120, 20, 10, 40),
         ),
       ),
