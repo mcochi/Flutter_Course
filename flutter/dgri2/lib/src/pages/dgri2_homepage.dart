@@ -1,7 +1,12 @@
+import 'package:dgri2/src/pages/news_page.dart';
 import 'package:dgri2/src/utils/diagonal_shape.dart';
 import 'package:flutter/material.dart';
 import 'package:dgri2/src/providers/menu_provider.dart';
 import 'package:dgri2/src/utils/iconco_string_util.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong/latlong.dart';
+
+import 'alert_page.dart';
 
 class DGRI2HomePage extends StatefulWidget {
   DGRI2HomePage({Key key}) : super(key: key);
@@ -36,14 +41,20 @@ class _DGRI2HomePageState extends State<DGRI2HomePage> {
               fit: BoxFit.contain,
             )),
           ),*/
+          
           _buildIamge(),
           _tarjetaBienvenida(),
           Divider(),
-          _tarjetaBienvenida2(),
-          _boton(210.0,opt[0],iconos[0]),
-          _boton(320.0,opt[1],iconos[1]),
-          _boton(440.0,opt[2],iconos[2]),
-          _boton(560.0,opt[3],iconos[3]),
+          _crearMapa(),
+          //_tarjetaBienvenida2(),
+          _boton(210.0,opt[0],iconos[0],context,'news'),
+          _boton(320.0,opt[1],iconos[1],context,'convocatorias'),
+          _boton(440.0,opt[2],iconos[2],context,'cursos'),
+          _boton(560.0,opt[3],iconos[3],context,'equipamiento'),
+          _crearMapa(),
+          //_boton(760.0,opt[3],iconos[3]),
+
+
           //Estaría bien montar un background image
 
           //_listaOpciones(),
@@ -51,7 +62,7 @@ class _DGRI2HomePageState extends State<DGRI2HomePage> {
     );
   }
 
-  Widget _boton(double position, String texto, String icono) {
+  Widget _boton(double position, String texto, String icono, BuildContext context, String nextscreen) {
     return Container(
             width: 110.0,
             padding: EdgeInsets.only(top: position, left:10.0),
@@ -64,12 +75,35 @@ class _DGRI2HomePageState extends State<DGRI2HomePage> {
               iconSize: 48.0,
               color: Colors.blue,
               onPressed: () {
+                final route = MaterialPageRoute(
+                builder: ( context ) => _nextscreen(nextscreen)
+                );
+                Navigator.push(context, route);
               },
               ),
               Text('$texto')
             ],
             ),
           );
+  }
+
+  Widget _nextscreen(String nextscreen) {
+    switch(nextscreen) { 
+      case "news": {  return NewsPage(); } 
+      break; 
+     
+      case "convocatorias": {  return AlertPage(); } 
+      break; 
+     
+      case "cursos": {  return AlertPage(); } 
+      break; 
+     
+      case "equipamiento": {  return AlertPage(); } 
+      break; 
+     
+      default: { return AlertPage(); } 
+      break; 
+   } 
   }
 
   Widget _tarjetaBienvenida() {
@@ -121,8 +155,8 @@ class _DGRI2HomePageState extends State<DGRI2HomePage> {
   }
 
   Widget _botones() {
-    List<String> opt = ['News','Convocatorias Europeas','Cursos','Equipamiento'];
-    List<String> iconos = ['add_alert', 'accessibility', 'folder_open', 'donut_large'];
+    List<String> opt = ['News','Convocatorias Europeas','Cursos','Equipamiento','Equipamiento'];
+    List<String> iconos = ['add_alert', 'accessibility', 'folder_open', 'donut_large','donut_large'];
 
     return Expanded(
           child: Container(
@@ -201,6 +235,50 @@ class _DGRI2HomePageState extends State<DGRI2HomePage> {
         ),
       ),
     );
+  }
+
+  Widget _crearMapa() {
+    return 
+        Positioned(
+          left: 120.0,
+          top: 360.0,
+          height: 300.0,        
+          child: Container(
+          width: 280.0,
+          //height: 800.0,
+
+          color: Colors.redAccent,
+          child: FlutterMap(
+            options: new MapOptions(
+              zoom: 15.0,
+              center: LatLng(42.460805,-2.415805),
+            ),
+            layers: [
+              new TileLayerOptions(
+                urlTemplate: "https://api.tiles.mapbox.com/v4/"
+                    "{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}",
+                additionalOptions: {
+                  'accessToken': 'pk.eyJ1IjoiY29yb2RyaSIsImEiOiJjazg4anhmdjgwOHoxM2duYW94eHh5ZXU4In0.eMWj4O7qmGTnDK6XkEOTJQ',
+                  'id': 'mapbox.streets',
+                },
+              ),
+              new MarkerLayerOptions(
+                markers: [
+                  new Marker(
+                    width: 80.0,
+                    height: 80.0,
+                    point: LatLng(42.460805,-2.415805),
+                    builder: (ctx) =>
+                    new Container(
+                      child: new Icon(Icons.gps_fixed),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+      ),
+        );
   }
 
   
