@@ -1,3 +1,4 @@
+import 'package:dgri2/src/pages/convocatoria_paget.dart';
 import 'package:dgri2/src/pages/news_page.dart';
 import 'package:dgri2/src/utils/diagonal_shape.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,7 @@ class _DGRI2HomePageState extends State<DGRI2HomePage> {
 
   //final _volume = 40.0;
   final double _imageHeight = 256.0;
-  List<String> opt = ['News','Convocatorias','Cursos','Equipamiento'];
+  List<String> opt = ['News','Convocatorias','Cursos','Equipamiento',''];
   List<String> iconos = ['add_alert', 'accessibility', 'folder_open', 'donut_large'];
 
   @override
@@ -33,32 +34,35 @@ class _DGRI2HomePageState extends State<DGRI2HomePage> {
         //),
         //elevation: 50.0,
       //),
-      body: Stack(
-        children: <Widget>[
-          /*Container(
-            decoration: BoxDecoration(image: DecorationImage(
-              image: AssetImage('images/birds.jpb'),
-              fit: BoxFit.contain,
-            )),
-          ),*/
-          
-          _buildIamge(),
-          _tarjetaBienvenida(),
-          Divider(),
-          _crearMapa(),
-          //_tarjetaBienvenida2(),
-          _boton(210.0,opt[0],iconos[0],context,'news'),
-          _boton(320.0,opt[1],iconos[1],context,'convocatorias'),
-          _boton(440.0,opt[2],iconos[2],context,'cursos'),
-          _boton(560.0,opt[3],iconos[3],context,'equipamiento'),
-          _crearMapa(),
-          //_boton(760.0,opt[3],iconos[3]),
+      body: SingleChildScrollView(
+              child: Stack(
+          children: <Widget>[
+            /*Container(
+              decoration: BoxDecoration(image: DecorationImage(
+                image: AssetImage('images/birds.jpb'),
+                fit: BoxFit.contain,
+              )),
+            ),*/
+            _buildIamge(),
+            _tarjetaBienvenida(),
+            Divider(),
+            _crearMapa(),
+            //_tarjetaBienvenida2(),
+            _boton(310.0,opt[0],iconos[0],context,'news'),
+            _boton(420.0,opt[1],iconos[1],context,'convocatorias'),
+            _boton(540.0,opt[2],iconos[2],context,'cursos'),
+            _boton(660.0,opt[3],iconos[3],context,'equipamiento'),
+            //_boton(760.0,opt[3],iconos[3],context,'equipamiento'),
+            _tarjetaBienvenida2(),
+            _crearMapa(),
+            //_boton(760.0,opt[3],iconos[3]),
 
 
-          //Estaría bien montar un background image
+            //Estaría bien montar un background image
 
-          //_listaOpciones(),
-        ],),
+            //_listaOpciones(),
+          ],),
+      ),
     );
   }
 
@@ -92,14 +96,15 @@ class _DGRI2HomePageState extends State<DGRI2HomePage> {
       case "news": {  return NewsPage(); } 
       break; 
      
-      case "convocatorias": {  return AlertPage(); } 
+      case "convocatorias": {  return ConvocatoriaPage(); } 
       break; 
      
       case "cursos": {  return AlertPage(); } 
       break; 
      
       case "equipamiento": {  return AlertPage(); } 
-      break; 
+      break;
+       
      
       default: { return AlertPage(); } 
       break; 
@@ -131,9 +136,9 @@ class _DGRI2HomePageState extends State<DGRI2HomePage> {
 
   Widget _tarjetaBienvenida2() {
     return Container(
-      height: 640.0,
+      height: 800.0,
       //color: Colors.redAccent,
-      padding: EdgeInsets.only(top: 350.0, left: 110.0),
+      padding: EdgeInsets.only(top: 675.0, left: 110.0),
       child: Card(
         elevation: 4.0,
         shape: RoundedRectangleBorder(
@@ -142,9 +147,9 @@ class _DGRI2HomePageState extends State<DGRI2HomePage> {
         child: Column(
           children: <Widget>[
             ListTile(
-              leading:Icon(Icons.explore, color: Colors.blue),
-              title: Text('SRI:'),
-              subtitle: Text('El Sistema Riojano de Innovación se define en la Ley 3/2009 de Ciencia, Tecnología e Innovación de La Rioja, como TODOS los agentes, estructuras e instrumentos públicos y privados, que participan activamente en el desarrollo de la capacidad de innovación de la región, estableciendo entre si a lo largo del proceso de innovación múltiples interconexiones.') 
+              leading:Icon(Icons.gps_fixed, color: Colors.blue),
+              title: Text('Centro Tecnológico de La Rioja'),
+              subtitle: Text('Av. Zaragoza 21, \n 26006 \n Logroño, \n La Rioja') 
               ,
 
             ),
