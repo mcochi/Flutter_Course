@@ -1,25 +1,26 @@
 import 'package:dgri2/src/utils/convocatoria.dart';
+import 'package:dgri2/src/utils/equipamiento.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class ConvocatoriaPage extends StatefulWidget {
-  ConvocatoriaPage({Key key}) : super(key: key);
+class EquipamientoPage extends StatefulWidget {
+  EquipamientoPage({Key key}) : super(key: key);
 
   @override
-  _ConvocatoriaPageState createState() => _ConvocatoriaPageState();
+  _EquipamientoPageState createState() => _EquipamientoPageState();
 }
 
-class _ConvocatoriaPageState extends State<ConvocatoriaPage> {
+class _EquipamientoPageState extends State<EquipamientoPage> {
 
-  Future<List<Convocatoria>> convocatoria;
+  Future<List<Equipamiento>> convocatoria;
   Icon _searchIcon = new Icon(Icons.search);
-  Widget _appBarTitle = new Text( 'Convocatorias Europeas' );
+  Widget _appBarTitle = new Text( 'Equipamiento' );
   final TextEditingController _filter = new TextEditingController();
   String _searchText = "";
   List names = new List();
   List filteredNames = new List();
-  int _numberofresults = 0;
+  //int _numberofresults = 0;
 
 
   @override
@@ -28,7 +29,7 @@ class _ConvocatoriaPageState extends State<ConvocatoriaPage> {
     convocatoria = fetchPost();
   }
 
-  _ConvocatoriaPageState() {
+  _EquipamientoPageState() {
     _filter.addListener(() {
       if (_filter.text.isEmpty) {
         setState(() {
@@ -38,7 +39,7 @@ class _ConvocatoriaPageState extends State<ConvocatoriaPage> {
       } else {
         setState(() {
           _searchText = _filter.text;
-          _numberofresults = 14;
+          //_numberofresults = 14;
         });
       }
     });
@@ -47,11 +48,11 @@ class _ConvocatoriaPageState extends State<ConvocatoriaPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildBar(context),
-      body: FutureBuilder<List<Convocatoria>>(
+      body: FutureBuilder<List<Equipamiento>>(
         future: convocatoria,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            List<Convocatoria> data = snapshot.data;
+            List<Equipamiento> data = snapshot.data;
             return _convocatoriaListView(data);
           } else if (snapshot.hasError) {
             return Text("${snapshot.error}");
@@ -64,52 +65,54 @@ class _ConvocatoriaPageState extends State<ConvocatoriaPage> {
     );
   }
 
-    Future<List<Convocatoria>> fetchPost() async {
+    Future<List<Equipamiento>> fetchPost() async {
       final response =
-      await http.get('http://79.153.17.195:3002/ProyEu');
+      await http.get('http://79.153.17.195:3002/Equip');
 
       if (response.statusCode == 200) {
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
         List jsonResponse = json.decode(response.body);
-        return jsonResponse.map((convocatoriaitem) => new Convocatoria.fromJson(convocatoriaitem)).toList();
+        return jsonResponse.map((convocatoriaitem) => new Equipamiento.fromJson(convocatoriaitem)).toList();
       } else {
         // Si esta respuesta no fue OK, lanza un error.
         throw Exception('Failed to load post');
       }
     }
 
-    ListView _convocatoriaListView(List<Convocatoria> data) {
-      List<Convocatoria> tempList = new List<Convocatoria>();
+    ListView _convocatoriaListView(List<Equipamiento> data) {
+      List<Equipamiento> tempList = new List<Equipamiento>();
       if(_searchText.isNotEmpty) {
       data.forEach((valor) {
-        if(valor.title.toLowerCase().contains(this._searchText.toLowerCase())) {
+        if((valor.descripcion).toLowerCase().contains(this._searchText.toLowerCase())) {
           tempList.add(valor);
         }
       });
       } else {
         tempList = data;
       }
-      _numberofresults = tempList.length;
+      //_numberofresults = tempList.length;
       return ListView.builder(
         itemCount: tempList.length,
         itemBuilder: (context, index) {
-          return _tile(tempList[index].id, tempList[index].deadline, tempList[index].title, Icons.work);
+          return _tile(tempList[index].inv, tempList[index].marca, tempList[index].modelo,tempList[index].dto,tempList[index].descripcion, Icons.equalizer, context);
         },
       );
     }
 
-     ListTile _tile(String id, String deadline, String title , IconData icon) => ListTile(
-        title: Text(id,
+     ListTile _tile(String inv, String marca, String modelo , String dto, String descripcion, IconData icon, BuildContext context) => ListTile(
+        title: Text(descripcion,
             style: TextStyle(
               fontWeight: FontWeight.w500,
               fontSize: 20,
             )),
-        subtitle: Text(title),
-        leading: Icon(
+        subtitle: Text(marca),
+        trailing: Icon(Icons.subdirectory_arrow_right, color: Colors.blue),
+        onTap: () => _mostrarAlert(context, inv, marca,modelo, dto, descripcion),
+        /*leading: Icon(
           icon,
           color: Colors.blue[500],
-        ),
-        trailing: Text(deadline),
+        ),*/
+        //trailing: Text(dto),
     );
 
 
@@ -142,11 +145,49 @@ class _ConvocatoriaPageState extends State<ConvocatoriaPage> {
           ;
         } else {
           this._searchIcon = new Icon(Icons.search);
-          this._appBarTitle = new Text( 'Convocatorias Europeas' );
+          this._appBarTitle = new Text( 'Equipmamiento' );
           filteredNames = names;
           _filter.clear();
         }
       });
     }
+
+
+    void _mostrarAlert(BuildContext context, String inv, String marca, String modelo , String dto, String descripcion) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(25.0)
+          ),
+          title: Text('$descripcion $marca  (INV: $inv)'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Divider(),
+              Text('Para más información contactar con $dto'),
+              //Text('$dto')
+            ]
+          ,),
+          /*actions: <Widget>[
+            FlatButton(
+              child:Text('ok'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            FlatButton(
+              child:Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+
+          ],*/
+        );
+      }
+    );
+  }
 
 }

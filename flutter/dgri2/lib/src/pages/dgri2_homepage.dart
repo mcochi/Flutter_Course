@@ -1,4 +1,6 @@
 import 'package:dgri2/src/pages/convocatoria_paget.dart';
+import 'package:dgri2/src/pages/cursos_page.dart';
+import 'package:dgri2/src/pages/equip_page.dart';
 import 'package:dgri2/src/pages/news_page.dart';
 import 'package:dgri2/src/utils/diagonal_shape.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +8,6 @@ import 'package:dgri2/src/providers/menu_provider.dart';
 import 'package:dgri2/src/utils/iconco_string_util.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
-
 import 'alert_page.dart';
 
 class DGRI2HomePage extends StatefulWidget {
@@ -99,10 +100,10 @@ class _DGRI2HomePageState extends State<DGRI2HomePage> {
       case "convocatorias": {  return ConvocatoriaPage(); } 
       break; 
      
-      case "cursos": {  return AlertPage(); } 
+      case "cursos": {  return CursosPage(); } 
       break; 
      
-      case "equipamiento": {  return AlertPage(); } 
+      case "equipamiento": {  return EquipamientoPage(); } 
       break;
        
      
