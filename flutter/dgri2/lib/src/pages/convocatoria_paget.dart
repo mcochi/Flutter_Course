@@ -1,7 +1,12 @@
+import 'package:dgri2/src/pages/conv_webview_page.dart';
 import 'package:dgri2/src/utils/convocatoria.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:webview_flutter/webview_flutter.dart';
+
+// API SOURCE
+// http://ec.europa.eu/info/funding-tenders/opportunities/data/referenceData/grantsTenders.json
 
 class ConvocatoriaPage extends StatefulWidget {
   ConvocatoriaPage({Key key}) : super(key: key);
@@ -52,7 +57,7 @@ class _ConvocatoriaPageState extends State<ConvocatoriaPage> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             List<Convocatoria> data = snapshot.data;
-            return _convocatoriaListView(data);
+            return _convocatoriaListView(context, data);
           } else if (snapshot.hasError) {
             return Text("${snapshot.error}");
           }
@@ -66,11 +71,11 @@ class _ConvocatoriaPageState extends State<ConvocatoriaPage> {
 
     Future<List<Convocatoria>> fetchPost() async {
       final response =
-      await http.get('http://79.153.17.195:3002/ProyEu');
+      await http.get('http://ec.europa.eu/info/funding-tenders/opportunities/data/referenceData/grantsTenders.json');
 
       if (response.statusCode == 200) {
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        List jsonResponse = json.decode(response.body);
+        List jsonResponse = json.decode(response.body)['fundingData']['GrantTenderObj'];
         return jsonResponse.map((convocatoriaitem) => new Convocatoria.fromJson(convocatoriaitem)).toList();
       } else {
         // Si esta respuesta no fue OK, lanza un error.
@@ -78,41 +83,59 @@ class _ConvocatoriaPageState extends State<ConvocatoriaPage> {
       }
     }
 
-    ListView _convocatoriaListView(List<Convocatoria> data) {
+    ListView _convocatoriaListView(BuildContext context, List<Convocatoria> data) {
       List<Convocatoria> tempList = new List<Convocatoria>();
       if(_searchText.isNotEmpty) {
       data.forEach((valor) {
-        if(valor.title.toLowerCase().contains(this._searchText.toLowerCase())) {
+        if((valor.title + valor.identifier).toLowerCase().contains(this._searchText.toLowerCase()) && valor.status.contains("Open")) {
           tempList.add(valor);
-        }
+        } 
       });
       } else {
-        tempList = data;
+        data.forEach((valor) {
+        if(valor.status.contains("Open")) {
+          tempList.add(valor);
+        } 
+      });
+        //tempList = data;
       }
       _numberofresults = tempList.length;
       return ListView.builder(
         itemCount: tempList.length,
         itemBuilder: (context, index) {
-          return _tile(tempList[index].id, tempList[index].deadline, tempList[index].title, Icons.work);
+          return _tile(context, tempList[index].identifier, tempList[index].deadline.toString(), tempList[index].title, tempList[index].cftId.toString(), tempList[index].type.toString(),tempList[index].status, tempList[index].description, Icons.work);
         },
       );
     }
 
-     ListTile _tile(String id, String deadline, String title , IconData icon) => ListTile(
-        title: Text(id,
-            style: TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 20,
-            )),
-        subtitle: Text(title),
-        leading: Icon(
-          icon,
-          color: Colors.blue[500],
-        ),
-        trailing: Text(deadline),
-    );
-
-
+     ListTile _tile(BuildContext context, String id, String deadline, String title , String etendering, String tipo, String status, String description,  IconData icon) {
+       String url = '';
+       String text = '';
+       if (tipo.contains('0')){
+         text = description;
+       } else {
+         url = "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/" + id.toLowerCase();
+       }
+      return ListTile(
+          title: Text(id,
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 20,
+              )),
+          subtitle: Text(title),
+          leading: Icon(
+            icon,
+            color: Colors.blue[500],
+          ),
+          trailing: Text(status),
+          onTap: () => _mostrarAlert(context, id, url, text , tipo)/*() => () {
+                  final route = MaterialPageRoute(
+                  builder: ( context ) => CallWebViewPage()
+                  );
+                  Navigator.push(context, route);
+                },*/
+      );
+    }
     Widget _buildBar(BuildContext context) {
     return new AppBar(
       backgroundColor: Colors.lightGreen,
@@ -149,4 +172,48 @@ class _ConvocatoriaPageState extends State<ConvocatoriaPage> {
       });
     }
 
+    void _mostrarAlert(BuildContext context, String identifier, String url, String text, String tipo) {
+    if (tipo.contains('1')) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(25.0)
+          ),
+          title: Text('$identifier'),
+          content: Container(
+            width: 300.0,
+            color: Colors.lightGreen,
+            child: WebView(
+            key: UniqueKey(),
+            javascriptMode: JavascriptMode.unrestricted,
+            initialUrl: url,
+            debuggingEnabled: false,
+            ),
+          ),
+        );
+      }
+    );
+    } else {
+      showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(25.0)
+          ),
+          title: Text('$identifier'),
+          content: Container(
+            width: 300.0,
+            //color: Colors.lightGreen,
+            child: Text(text),
+            ),
+          );
+        }
+      );
+    }
+  }
 }
