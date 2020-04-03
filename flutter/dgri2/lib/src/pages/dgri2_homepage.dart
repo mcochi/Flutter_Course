@@ -21,7 +21,7 @@ class _DGRI2HomePageState extends State<DGRI2HomePage> {
 
   //final _volume = 40.0;
   final double _imageHeight = 256.0;
-  List<String> opt = ['News','Convocatorias','Cursos','Equipamiento',''];
+  List<String> opt = ['News','Convocatorias','Cursos','Equipos SRI',''];
   List<String> iconos = ['add_alert', 'accessibility', 'folder_open', 'donut_large'];
 
   @override
@@ -126,7 +126,7 @@ class _DGRI2HomePageState extends State<DGRI2HomePage> {
             ListTile(
               leading:Icon(Icons.question_answer, color: Colors.blue),
               title: Text('D.G. Reindustrialización, Internacionalización e Innovación'),
-              subtitle: Text('En esta app encontrarás las últimas noticias, cursos y eventos relacionados la dirección y la innovación en La Rioja')
+              subtitle: Text('App oficial de la DG de Reindustrialización, Internacionalización e Innovación')
               ,
             ),
           ],

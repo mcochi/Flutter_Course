@@ -113,6 +113,7 @@ class _ConvocatoriaPageState extends State<ConvocatoriaPage> {
        String text = '';
        if (tipo.contains('0')){
          text = description;
+         url = "https://etendering.ted.europa.eu//cft/cft-display.html?cftId="+etendering;
        } else {
          url = "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/topic-details/" + id.toLowerCase();
        }
@@ -206,14 +207,24 @@ class _ConvocatoriaPageState extends State<ConvocatoriaPage> {
             borderRadius: BorderRadius.circular(25.0)
           ),
           title: Text('$identifier'),
-          content: Container(
-            width: 300.0,
-            //color: Colors.lightGreen,
-            child: Text(text),
-            ),
-          );
-        }
-      );
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Container(
+                width: 300.0,
+                //color: Colors.lightGreen,
+                child: Text(text),
+                ),
+                Container(
+                width: 300.0,
+                //color: Colors.lightGreen,
+                child: Text('Para más información visitar: \n $url'),
+                )
+            ]
+          ),
+        );
+      }
+    );
     }
   }
 }
