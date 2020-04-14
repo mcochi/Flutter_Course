@@ -22,6 +22,11 @@ class _InputPageState extends State<InputPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Inputs de texto'),
+        actions: <Widget>[
+          new PreferredSize(
+            child: _crearDropdown(),
+            preferredSize: Size(0.0,80.0),)
+        ],
       ),
       body: ListView(
         padding: EdgeInsets.symmetric(
@@ -186,13 +191,13 @@ class _InputPageState extends State<InputPage> {
     return Row(
       children: <Widget>[
         Icon(Icons.select_all),
-        SizedBox(width: 30.0,),
+        //SizedBox(width: 30.0,),
         Expanded(
             child: DropdownButton(
             value: _opcionSeleccionada,
             items: getOpcionesDropdrown(),
             onChanged: (opt) {
-              //print(opt);
+              print(opt);
               setState(() {
               _opcionSeleccionada = opt;
               });

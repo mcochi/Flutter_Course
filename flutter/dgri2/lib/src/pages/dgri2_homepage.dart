@@ -1,6 +1,7 @@
 import 'package:dgri2/src/pages/convocatoria_paget.dart';
 import 'package:dgri2/src/pages/cursos_page.dart';
 import 'package:dgri2/src/pages/equip_page.dart';
+import 'package:dgri2/src/pages/eureka_page.dart';
 import 'package:dgri2/src/pages/news_page.dart';
 import 'package:dgri2/src/utils/diagonal_shape.dart';
 import 'package:flutter/material.dart';

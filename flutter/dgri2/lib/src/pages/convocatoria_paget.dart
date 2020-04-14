@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:intl/intl.dart';
+
 
 // API SOURCE
 // http://ec.europa.eu/info/funding-tenders/opportunities/data/referenceData/grantsTenders.json
@@ -20,15 +22,27 @@ class _ConvocatoriaPageState extends State<ConvocatoriaPage> {
   Future<List<Convocatoria>> convocatoria;
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text( 'Convocatorias Europeas' );
+  Widget _appBarBottom = new PreferredSize(child: Text(''),preferredSize: Size(0.0,0.0),);
   final TextEditingController _filter = new TextEditingController();
   String _searchText = "";
   List names = new List();
   List filteredNames = new List();
   int _numberofresults = 0;
+  String _opcionSeleccionada;
+  List<String> _programas = [
+  "All","H2020","3HP","AMIF","CP",
+  "CREA","EMFF","EUAID","EPLUS","ED",
+  "EFC","EDIDP","ESTAT","HERC","IMCAP",
+  "ISFB","ISPF","PANAF","JUST","PPPA",
+  "COSME","LIFE","AGRIP","RFCS","REC",
+  "UCPM","e-tendering"
+  ];
+
 
 
   @override
   void initState() {
+    _opcionSeleccionada = _programas.first;
     super.initState();
     convocatoria = fetchPost();
   }
@@ -51,6 +65,7 @@ class _ConvocatoriaPageState extends State<ConvocatoriaPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      //drawer: NavDrawer(),
       appBar: _buildBar(context),
       body: FutureBuilder<List<Convocatoria>>(
         future: convocatoria,
@@ -85,6 +100,7 @@ class _ConvocatoriaPageState extends State<ConvocatoriaPage> {
 
     ListView _convocatoriaListView(BuildContext context, List<Convocatoria> data) {
       List<Convocatoria> tempList = new List<Convocatoria>();
+      // Búsqueda por palabra clave
       if(_searchText.isNotEmpty) {
       data.forEach((valor) {
         if((valor.title + valor.identifier).toLowerCase().contains(this._searchText.toLowerCase()) && valor.status.contains("Open")) {
@@ -100,15 +116,36 @@ class _ConvocatoriaPageState extends State<ConvocatoriaPage> {
         //tempList = data;
       }
       _numberofresults = tempList.length;
+
+      //Búsqueda por programa
+      List<Convocatoria> tempList2 = new List<Convocatoria>();
+      if(!_opcionSeleccionada.contains('All')) {
+        tempList.forEach((valor) {
+          if(valor.programa.contains(_opcionSeleccionada)) {
+            tempList2.add(valor);
+          }
+        }
+        );
+      } else {
+        tempList2 = tempList;
+      }
+      tempList2.sort((a,b) => a.deadline.compareTo(b.deadline));
       return ListView.builder(
-        itemCount: tempList.length,
+        itemCount: tempList2.length,
         itemBuilder: (context, index) {
-          return _tile(context, tempList[index].identifier, tempList[index].deadline.toString(), tempList[index].title, tempList[index].cftId.toString(), tempList[index].type.toString(),tempList[index].status, tempList[index].description, Icons.work);
+          return _tile(context, tempList2[index].identifier, tempList2[index].deadline.toString(), tempList2[index].title, tempList2[index].cftId.toString(), tempList2[index].type.toString(),tempList2[index].status, tempList2[index].description, tempList2[index].programa,Icons.work);
         },
       );
     }
 
-     ListTile _tile(BuildContext context, String id, String deadline, String title , String etendering, String tipo, String status, String description,  IconData icon) {
+     ListTile _tile(BuildContext context, String id, String deadline, String title , String etendering, String tipo, String status, String description, String programa,  IconData icon) {
+       var formatter = new DateFormat('yyyy-MM-dd');
+       String deadlinepostprocess;
+       if (int.parse(deadline) != 0) {
+          deadlinepostprocess = formatter.format(DateTime.fromMillisecondsSinceEpoch(int.parse(deadline)));
+       } else {
+         deadlinepostprocess = 'No close date';
+       }
        String url = '';
        String text = '';
        if (tipo.contains('0')){
@@ -128,7 +165,16 @@ class _ConvocatoriaPageState extends State<ConvocatoriaPage> {
             icon,
             color: Colors.blue[500],
           ),
-          trailing: Text(status),
+          trailing: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(status),
+              Text(programa),
+              //Text(deadline.toString()),
+              Text(deadlinepostprocess),
+            ],
+          ),
           onTap: () => _mostrarAlert(context, id, url, text , tipo)/*() => () {
                   final route = MaterialPageRoute(
                   builder: ( context ) => CallWebViewPage()
@@ -139,6 +185,7 @@ class _ConvocatoriaPageState extends State<ConvocatoriaPage> {
     }
     Widget _buildBar(BuildContext context) {
     return new AppBar(
+      bottom: _appBarBottom,
       backgroundColor: Colors.lightGreen,
       centerTitle: true,
       title: _appBarTitle,
@@ -154,21 +201,26 @@ class _ConvocatoriaPageState extends State<ConvocatoriaPage> {
       setState(() {
         if (this._searchIcon.icon == Icons.search) {
           this._searchIcon = new Icon(Icons.close);
-          this._appBarTitle = new TextField(
+          this._appBarTitle =  TextField(
             controller: _filter,
             decoration: new InputDecoration(
-              prefixIcon: new Icon(Icons.search),
+              prefixIcon: new Icon(Icons.search,),
               hintText: 'Search...',
+              focusColor: Colors.white,
               //suffix: Text('$_numberofresults resultados'),
-
             ),
           )
           ;
+          this._appBarBottom = new PreferredSize(
+            child: _crearDropdown(),
+            preferredSize: Size(0.0,30.0),);
         } else {
           this._searchIcon = new Icon(Icons.search);
           this._appBarTitle = new Text( 'Convocatorias Europeas' );
+          this._appBarBottom = new PreferredSize(child: Text(''),preferredSize: Size(0.0,00.0),);
           filteredNames = names;
           _filter.clear();
+          _opcionSeleccionada='All';
         }
       });
     }
@@ -227,4 +279,38 @@ class _ConvocatoriaPageState extends State<ConvocatoriaPage> {
     );
     }
   }
+
+  Widget _crearDropdown() {
+    return 
+        Expanded(
+            child: DropdownButton(     
+            hint: Text('Selecciona el programa:',style: TextStyle(color: Colors.white),),
+            icon: Icon(Icons.arrow_downward, color: Colors.white, size: 20.0,),
+            elevation: 10,
+            //value: _opcionSeleccionada,
+            items: getOpcionesDropdrown(),
+            onChanged: (String opt) {
+              print("antes $_opcionSeleccionada");
+              print(opt);
+              setState(() {
+                _opcionSeleccionada = opt;
+              });
+              print(_opcionSeleccionada);
+            },
+          ),
+        );
+  }
+
+  List<DropdownMenuItem<String>> getOpcionesDropdrown() {
+    List<DropdownMenuItem<String>> lista = new List();
+    _programas.forEach((poder) {
+      lista.add(DropdownMenuItem(
+        child: Text(poder),
+        value: poder
+        )
+        );
+        });
+      return lista;
+  }
 }
+
