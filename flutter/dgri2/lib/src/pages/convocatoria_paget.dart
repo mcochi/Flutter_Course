@@ -1,4 +1,9 @@
+import 'package:dgri2/src/pages/cdti_idi_page.dart';
 import 'package:dgri2/src/pages/conv_webview_page.dart';
+import 'package:dgri2/src/pages/dgri2_homepage.dart';
+import 'package:dgri2/src/pages/eureka_page.dart';
+import 'package:dgri2/src/pages/interreg_page.dart';
+import 'package:dgri2/src/pages/red_es_page.dart';
 import 'package:dgri2/src/utils/convocatoria.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -65,7 +70,8 @@ class _ConvocatoriaPageState extends State<ConvocatoriaPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //drawer: NavDrawer(),
+      floatingActionButton: _homebutton(),
+      drawer: _buidldrawer(),
       appBar: _buildBar(context),
       body: FutureBuilder<List<Convocatoria>>(
         future: convocatoria,
@@ -311,6 +317,91 @@ class _ConvocatoriaPageState extends State<ConvocatoriaPage> {
         );
         });
       return lista;
+  }
+
+  Widget _homebutton() {
+    return (
+      FloatingActionButton(
+        backgroundColor: Colors.lightGreen,
+        child: Icon(Icons.home, ),
+        onPressed: () {
+                final route = MaterialPageRoute(
+                builder: ( context ) => DGRI2HomePage()
+                );
+                Navigator.push(context, route);
+        },
+      )
+    );
+  }
+
+  Widget _buidldrawer() {
+    return(
+      new Drawer(
+        elevation: 20.0,
+        child: new ListView(
+          children: <Widget> [
+            new DrawerHeader(child: new Image.asset(
+          'images/head.jpg',
+          fit: BoxFit.fill,
+          colorBlendMode: BlendMode.srcOver,
+          filterQuality: FilterQuality.low,
+          color: new Color.fromARGB(120, 20, 10, 40),
+        )),
+            new ListTile(
+              title: new Text('Convocatorias Europeas'),
+              leading: Icon(Icons.euro_symbol),
+              onTap: () {
+                final route = MaterialPageRoute(
+                builder: ( context ) => ConvocatoriaPage()
+                );
+                Navigator.push(context, route);
+              },
+            ),
+            new ListTile(
+              title: new Text('Eureka calls'),
+              leading: Icon(Icons.headset_mic),
+              onTap: () {
+                final route = MaterialPageRoute(
+                builder: ( context ) => EurekaPage()
+                );
+                Navigator.push(context, route);
+              },
+            ),
+            new ListTile(
+              title: new Text('Interreg'),
+              leading: Icon(Icons.speaker_group),
+              onTap: () {
+                final route = MaterialPageRoute(
+                builder: ( context ) => InterregPage()
+                );
+                Navigator.push(context, route);
+              },
+            ),
+            //new Divider(),
+            new ListTile(
+              title: new Text('CDTI'),
+              leading: Icon(Icons.nature),
+              onTap: () {
+                final route = MaterialPageRoute(
+                builder: ( context ) => CdtiIDIPage()
+                );
+                Navigator.push(context, route);
+              },
+            ),
+             new ListTile(
+              title: new Text('Red.es'),
+              leading: Icon(Icons.wifi),
+              onTap: () {
+                final route = MaterialPageRoute(
+                builder: ( context ) => RedesPage()
+                );
+                Navigator.push(context, route);
+              },
+            ),
+          ],
+        )
+      )
+    );
   }
 }
 

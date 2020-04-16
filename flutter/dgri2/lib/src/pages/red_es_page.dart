@@ -1,26 +1,26 @@
 import 'package:dgri2/src/pages/cdti_idi_page.dart';
 import 'package:dgri2/src/pages/convocatoria_paget.dart';
 import 'package:dgri2/src/pages/dgri2_homepage.dart';
+import 'package:dgri2/src/pages/eureka_page.dart';
 import 'package:dgri2/src/pages/interreg_page.dart';
-import 'package:dgri2/src/pages/red_es_page.dart';
 import 'package:flutter/material.dart';
 import 'package:webfeed/webfeed.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-class EurekaPage extends StatefulWidget {
-  EurekaPage({Key key}) : super(key: key);
+class RedesPage extends StatefulWidget {
+  RedesPage({Key key}) : super(key: key);
 
   @override
-  _EurekaPageState createState() => _EurekaPageState();
+  _RedesPageState createState() => _RedesPageState();
 }
 
-class _EurekaPageState extends State<EurekaPage> {
+class _RedesPageState extends State<RedesPage> {
 
   Future<RssFeed> convocatoria;
   Icon _searchIcon = new Icon(Icons.search);
-  Widget _appBarTitle = new Text( 'Eureka Calls' );
+  Widget _appBarTitle = new Text( 'Red.es' );
   Widget _appBarBottom = new PreferredSize(child: Text(''),preferredSize: Size(0.0,0.0),);
   final TextEditingController _filter = new TextEditingController();
   String _searchText = "";
@@ -33,18 +33,7 @@ class _EurekaPageState extends State<EurekaPage> {
     convocatoria = fetchPost();
   }
 
-  Future<RssFeed> fetchPost() async {
-      RssFeed response = await http.get("https://www.eurekanetwork.org/rss-eureka-feed.xml").then((response) {
-        return response.body;
-      }).then((bodyString) {
-        var channel = new RssFeed.parse(bodyString);
-        //print(channel);
-        return channel;
-      });
-      return response;
-    }
-
-  _EurekaPageState() {
+  _RedesPageState() {
     _filter.addListener(() {
       if (_filter.text.isEmpty) {
         setState(() {
@@ -59,6 +48,17 @@ class _EurekaPageState extends State<EurekaPage> {
     });
   }
 
+  Future<RssFeed> fetchPost() async {
+      RssFeed response = await http.get("https://www.red.es/redes/rss").then((response) {
+        return response.body;
+      }).then((bodyString) {
+        var channel = new RssFeed.parse(bodyString);
+        print(channel);
+        return channel;
+      });
+      return response;
+    }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,7 +70,7 @@ class _EurekaPageState extends State<EurekaPage> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             RssFeed data = snapshot.data;
-            //print(data.items[5].title);
+            print(data.items[5].title);
             return _convocatoriaListView(context, data);
           } else if (snapshot.hasError) {
             return Text("${snapshot.error}");
@@ -83,8 +83,8 @@ class _EurekaPageState extends State<EurekaPage> {
   }
 
 
-  ListView _convocatoriaListView(BuildContext context, RssFeed data) {
-      List<RssItem> tempList = new List<RssItem>();
+   ListView _convocatoriaListView(BuildContext context, RssFeed data) {
+       List<RssItem> tempList = new List<RssItem>();
       // Búsqueda por palabra clave
       if(_searchText.isNotEmpty) {
         data.items.forEach((valor) {
@@ -99,12 +99,12 @@ class _EurekaPageState extends State<EurekaPage> {
       }
       //print(tempList.length);
       return ListView.builder(
-        itemCount: tempList.length,
+        itemCount: 30,
         itemBuilder: (context, index) {
            return _tile(context, tempList[index].title, tempList[index].link,Icons.work); 
         },
       );
-  }
+    }
 
   Widget _tile(BuildContext context, String title, String  link,  IconData icon) {
       return Column(
@@ -269,7 +269,7 @@ class _EurekaPageState extends State<EurekaPage> {
           ;
         } else {
           this._searchIcon = new Icon(Icons.search);
-          this._appBarTitle = new Text( 'Eureka Calls' );
+          this._appBarTitle = new Text( 'Red.es' );
           this._appBarBottom = new PreferredSize(child: Text(''),preferredSize: Size(0.0,00.0),);
           filteredNames = names;
           _filter.clear();

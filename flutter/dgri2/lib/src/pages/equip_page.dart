@@ -67,7 +67,7 @@ class _EquipamientoPageState extends State<EquipamientoPage> {
 
     Future<List<Equipamiento>> fetchPost() async {
       final response =
-      await http.get('http://*.*.*.*:3002/Equip');
+      await http.get('http://*.*.*.*:*/Equip');
 
       if (response.statusCode == 200) {
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
