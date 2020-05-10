@@ -167,7 +167,7 @@ class _LoraGPSPageState extends State<LoraGPSPage> {
   } 
   Future<Coordinate> fetchPost() async {
       final response =
-      await http.get('http://83.32.158.101:3002/lora_gps_last');
+      await http.get('http://+.+.+.+:+/lora_gps_last');
 
       if (response.statusCode == 200) {
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
